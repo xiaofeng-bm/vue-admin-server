@@ -32,8 +32,24 @@ function querySQL(sql) {
     }
   });
 }
-
+// 单个查询
+function queryOne(sql) {
+  return new Promise((resolve, reject) => {
+    querySQL(sql)
+      .then((result) => {
+        if (result && result.length > 0) {
+          resolve(result[0]);
+        } else {
+          resolve(null);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
 
 module.exports = {
-  querySQL
-}
+  querySQL,
+  queryOne
+};
