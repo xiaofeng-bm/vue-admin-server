@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const { host, user, password, database } = require("./config");
 const { debug } = require("../utils/constant");
+const { isObject } = require("../utils/index");
 // 连接数据库
 function connect() {
   return mysql.createConnection({
@@ -49,7 +50,48 @@ function queryOne(sql) {
   });
 }
 
+// 插入
+function insert(model, tableName) {
+  return new Promise((resolve, reject) => {
+    if (!isObject(model)) {
+      reject(new Error("插入数据失败，插入数据必须为对象"));
+    } else {
+      const keys = [];
+      const values = [];
+      Object.keys(model).forEach((key) => {
+        keys.push(`\`${key}\``);
+        values.push(`'${model[key]}'`);
+      });
+
+      if (keys.length > 0 && values.length > 0) {
+        let sql = `INSERT INTO \`${tableName}\`(`;
+        const keysString = keys.join(",");
+        const valuesString = values.join(",");
+        sql = `${sql}${keysString}) VALUES (${valuesString})`;
+        const conn = connect();
+        console.log('sql=', sql)
+        try {
+          conn.query(sql, (err, result) => {
+            if(err) {
+              reject(err)
+            } else {
+              resolve(result)
+            }
+          })
+        } catch (error) {
+          reject(error)
+        } finally {
+          conn.end();
+        }
+      } else {
+        reject(new Error("SQL解析失败"));
+      }
+    }
+  });
+}
+
 module.exports = {
   querySQL,
-  queryOne
+  queryOne,
+  insert
 };

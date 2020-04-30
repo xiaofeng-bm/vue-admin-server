@@ -13,6 +13,11 @@ function decode(req) {
   return jwt.verify(token, PRIVATE_KEY);
 }
 
-module.exports = {
-  decode
+function isObject(obj) {
+  return Object.prototype.toString.call(obj) === "[object Object]";
 }
+
+module.exports = {
+  decode,
+  isObject
+};
