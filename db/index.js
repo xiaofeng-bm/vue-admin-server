@@ -90,8 +90,26 @@ function insert(model, tableName) {
   });
 }
 
+function andLike(where, k, v) {
+  if (where === 'where') {
+    return where + ` ${k} like '%${v}%'`
+  } else {
+    return where + ` and ${k} like '%${v}%'`
+  }
+}
+
+function and(where, k, v) {
+  if (where === 'where') {
+    return where + ` ${k}='${v}'`
+  } else {
+    return where + ` and ${k}='${v}'`
+  }
+}
+
 module.exports = {
   querySQL,
   queryOne,
-  insert
+  insert,
+  andLike,
+  and
 };

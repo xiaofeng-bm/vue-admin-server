@@ -33,7 +33,6 @@ router.post("/info", (req, res, next) => {
     findUser(decodeInfo.username).then((user) => {
       if (user) {
         user.roles = [user.role];
-        console.log("user=", user);
         new Result(user, "用户信息查询成功").success(res);
       } else {
         new Result("用户信息查询失败，请重新登录").fail(res);
