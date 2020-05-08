@@ -1,7 +1,6 @@
 const { insert, querySQL, andLike, and } = require("../db/index");
 
 function addHospital(model) {
-  console.log("model=", model);
   return insert(model, "hospital");
 }
 
