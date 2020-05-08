@@ -2,7 +2,7 @@ const express = require("express");
 const Result = require("../models/Result");
 const boom = require("boom");
 const jwtAuth = require("../utils/jwt_auth");
-const { addHospital, list } = require("../service/hospital");
+const { addHospital, list, delHosp } = require("../service/hospital");
 
 const router = express.Router();
 
@@ -22,10 +22,11 @@ router.post("/add", (req, res, next) => {
     });
 });
 
+// 获取列表数据
 router.get("/list", (req, res, next) => {
   let query = req.query;
   list(query)
-    .then(({list, total}) => {
+    .then(({ list, total }) => {
       const config = {
         config: {
           show: [
@@ -63,15 +64,31 @@ router.get("/list", (req, res, next) => {
         },
         table: list,
       };
-      new Result({ 
-        config,
-        page: Number(query.page),
-        limit: Number(query.limit),
-        total: total
-      }, "查询成功").success(res);
+      new Result(
+        {
+          config,
+          page: Number(query.page),
+          limit: Number(query.limit),
+          total: total,
+        },
+        "查询成功"
+      ).success(res);
     })
     .catch((err) => {
       console.log("/hospital/list", err);
+      next(boom.badImplementation(err));
+    });
+});
+
+// 删除
+router.post("/del", (req, res, next) => {
+  let query = req.body;
+  delHosp(query.id)
+    .then(() => {
+      new Result(null, "删除成功", { message: '删除成功' }).success(res);
+    })
+    .catch((err) => {
+      console.log("/hospital/del", err);
       next(boom.badImplementation(err));
     });
 });

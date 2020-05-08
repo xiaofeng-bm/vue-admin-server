@@ -69,7 +69,6 @@ function insert(model, tableName) {
         const valuesString = values.join(",");
         sql = `${sql}${keysString}) VALUES (${valuesString})`;
         const conn = connect();
-        console.log('sql=', sql)
         try {
           conn.query(sql, (err, result) => {
             if(err) {

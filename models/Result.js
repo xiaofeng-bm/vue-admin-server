@@ -13,8 +13,7 @@ class Result {
     } else {
       this.data = data;
       this.msg = msg;
-
-      if (this.options) {
+      if (options) {
         this.options = options;
       }
     }

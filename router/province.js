@@ -21,7 +21,6 @@ router.get("/province", (req, res, next) => {
 
 
 router.get('/city', (req, res, next) => {
-  console.log('req=', req.province);
   getCity(req.query.province).then(city => {
     if(city && city.length > 0) {
       new Result(city, '城市信息查询成功').success(res);
