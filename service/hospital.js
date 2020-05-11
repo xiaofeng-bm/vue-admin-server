@@ -1,4 +1,11 @@
-const { insert, querySQL, andLike, and } = require("../db/index");
+const {
+  insert,
+  querySQL,
+  andLike,
+  and,
+  queryOne,
+  update,
+} = require("../db/index");
 
 function addHospital(model) {
   return insert(model, "hospital");
@@ -36,8 +43,28 @@ function delHosp(id) {
   return querySQL(sql);
 }
 
+async function HospDetail(code) {
+  // 先查询相应的hosp信息，在根据province查询对应的
+  const hopsSql = `select * from hospital where hosCode='${code}'`;
+  const hospInfo = await queryOne(hopsSql);
+  const provinceSql = `select * from province`;
+  const provinceList = await querySQL(provinceSql);
+  // 查询城市信息
+  const citySql = `select * from province p inner join city c on p.province=c.province where p.name='${hospInfo.province}'`;
+  const cityList = await querySQL(citySql);
+  return new Promise((resolve, reject) => {
+    resolve({ hospInfo, provinceList, cityList });
+  });
+}
+
+function editHosp(model) {
+  return update(model, 'hospital', `where hosCode='${model.hosCode}'`)
+}
+
 module.exports = {
   addHospital,
   list,
-  delHosp
+  delHosp,
+  HospDetail,
+  editHosp
 };

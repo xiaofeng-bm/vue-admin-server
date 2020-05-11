@@ -2,7 +2,13 @@ const express = require("express");
 const Result = require("../models/Result");
 const boom = require("boom");
 const jwtAuth = require("../utils/jwt_auth");
-const { addHospital, list, delHosp } = require("../service/hospital");
+const {
+  addHospital,
+  list,
+  delHosp,
+  HospDetail,
+  editHosp
+} = require("../service/hospital");
 
 const router = express.Router();
 
@@ -29,21 +35,8 @@ router.get("/list", (req, res, next) => {
     .then(({ list, total }) => {
       const config = {
         config: {
-          show: [
-            "id",
-            "hosCode",
-            "hosName",
-            "level",
-            "province",
-            "city",
-            "address",
-          ],
+          show: ["hosCode", "hosName", "level", "province", "city", "address"],
           title: {
-            id: {
-              label: "ID",
-              align: "center",
-              width: 55,
-            },
             hosCode: {
               label: "医院编码",
             },
@@ -55,7 +48,10 @@ router.get("/list", (req, res, next) => {
               label: "行政等级",
             },
             province: "省份",
-            city: "城市",
+            city: {
+              label: "城市",
+              "show-overflow-tooltip": true,
+            },
             address: {
               label: "地址",
               width: 400,
@@ -85,12 +81,37 @@ router.post("/del", (req, res, next) => {
   let query = req.body;
   delHosp(query.id)
     .then(() => {
-      new Result(null, "删除成功", { message: '删除成功' }).success(res);
+      new Result(null, "删除成功", { message: "删除成功" }).success(res);
     })
     .catch((err) => {
       console.log("/hospital/del", err);
       next(boom.badImplementation(err));
     });
 });
+
+// 获取医院详情
+router.get("/detail", (req, res, next) => {
+  let query = req.query;
+  HospDetail(query.hosCode)
+    .then(info => {
+      new Result(info, "查询成功").success(res);
+    })
+    .catch((err) => {
+      console.log("/hospital/detail", err);
+      next(boom.badImplementation(err));
+    });
+});
+
+// 编辑保存
+router.post('/edit', (req, res, next) => {
+  let query = req.body;
+  editHosp(query).then(() => {
+    new Result(null, '保存成功', { message: '保存成功' }).success(res);
+  })
+  .catch((err) => {
+    console.log("/hospital/edit", err);
+    next(boom.badImplementation(err));
+  });
+})
 
 module.exports = router;

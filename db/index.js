@@ -71,14 +71,14 @@ function insert(model, tableName) {
         const conn = connect();
         try {
           conn.query(sql, (err, result) => {
-            if(err) {
-              reject(err)
+            if (err) {
+              reject(err);
             } else {
-              resolve(result)
+              resolve(result);
             }
-          })
+          });
         } catch (error) {
-          reject(error)
+          reject(error);
         } finally {
           conn.end();
         }
@@ -90,19 +90,54 @@ function insert(model, tableName) {
 }
 
 function andLike(where, k, v) {
-  if (where === 'where') {
-    return where + ` ${k} like '%${v}%'`
+  if (where === "where") {
+    return where + ` ${k} like '%${v}%'`;
   } else {
-    return where + ` and ${k} like '%${v}%'`
+    return where + ` and ${k} like '%${v}%'`;
   }
 }
 
 function and(where, k, v) {
-  if (where === 'where') {
-    return where + ` ${k}='${v}'`
+  if (where === "where") {
+    return where + ` ${k}='${v}'`;
   } else {
-    return where + ` and ${k}='${v}'`
+    return where + ` and ${k}='${v}'`;
   }
+}
+
+function update(model, tableName, where) {
+  return new Promise((resolve, reject) => {
+    if (!isObject(model)) {
+      reject(new Error("插入数据库失败，插入数据非对象"));
+    } else {
+      const entry = [];
+      Object.keys(model).forEach((key) => {
+        if (model.hasOwnProperty(key)) {
+          entry.push(`\`${key}\`='${model[key]}'`);
+        }
+      });
+      if (entry.length > 0) {
+        let sql = `UPDATE \`${tableName}\` SET`;
+        sql = `${sql} ${entry.join(",")} ${where}`;
+        const conn = connect();
+        try {
+          conn.query(sql, (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        } catch (e) {
+          reject(e);
+        } finally {
+          conn.end();
+        }
+      } else {
+        reject(new Error("SQL解析失败"));
+      }
+    }
+  });
 }
 
 module.exports = {
@@ -110,5 +145,6 @@ module.exports = {
   queryOne,
   insert,
   andLike,
-  and
+  and,
+  update
 };
