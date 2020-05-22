@@ -2,8 +2,11 @@ const express = require("express");
 const router = require("./router");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const history = require('connect-history-api-fallback');
 
 const app = express();
+
+app.use(history());
 
 // cors跨域
 app.use(cors());
