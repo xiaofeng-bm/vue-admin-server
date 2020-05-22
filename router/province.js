@@ -22,11 +22,7 @@ router.get("/province", (req, res, next) => {
 
 router.get('/city', (req, res, next) => {
   getCity(req.query.province).then(city => {
-    if(city && city.length > 0) {
-      new Result(city, '城市信息查询成功').success(res);
-    } else {
-      new Result('查询失败').fail(res)
-    }
+    new Result(city, '城市信息查询成功').success(res);
   })
 })
 module.exports = router;
