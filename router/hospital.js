@@ -64,7 +64,7 @@ router.get("/list", (req, res, next) => {
 // 删除
 router.post("/del", (req, res, next) => {
   let query = req.body;
-  delHosp(query.id)
+  delHosp(query.hosCode)
     .then(() => {
       new Result(null, "删除成功", { message: "删除成功" }).success(res);
     })

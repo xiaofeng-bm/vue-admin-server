@@ -38,8 +38,8 @@ async function list(model) {
   return { list: hosList, total: total[0].count };
 }
 
-function delHosp(id) {
-  const sql = `delete from hospital where id='${id}'`;
+function delHosp(hosCode) {
+  const sql = `delete from hospital where hosCode='${hosCode}'`;
   return querySQL(sql);
 }
 
