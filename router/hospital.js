@@ -7,7 +7,7 @@ const {
   list,
   delHosp,
   HospDetail,
-  editHosp
+  editHosp,
 } = require("../service/hospital");
 
 const router = express.Router();
@@ -34,30 +34,15 @@ router.get("/list", (req, res, next) => {
   list(query)
     .then(({ list, total }) => {
       const config = {
-        config: {
-          show: ["hosCode", "hosName", "level", "province", "city", "address"],
-          title: {
-            hosCode: {
-              label: "医院编码",
-            },
-            hosName: {
-              label: "医院名称",
-              width: 200,
-            },
-            level: {
-              label: "行政等级",
-            },
-            province: "省份",
-            city: {
-              label: "城市",
-              "show-overflow-tooltip": true,
-            },
-            address: {
-              label: "地址",
-              width: 400,
-            },
-          },
-        },
+        config: [
+          { type: "selection", 'reserve-selection': true },
+          { label: "医院编码", prop: "hosCode" },
+          { label: "医院名称", prop: "hosName" },
+          { label: "行政级别", prop: "level" },
+          { label: "省份", prop: "province" },
+          { label: "市区", prop: "city" },
+          { label: "地址", prop: "address" },
+        ],
         table: list,
       };
       new Result(
@@ -93,7 +78,7 @@ router.post("/del", (req, res, next) => {
 router.get("/detail", (req, res, next) => {
   let query = req.query;
   HospDetail(query.hosCode)
-    .then(info => {
+    .then((info) => {
       new Result(info, "查询成功").success(res);
     })
     .catch((err) => {
@@ -103,15 +88,16 @@ router.get("/detail", (req, res, next) => {
 });
 
 // 编辑保存
-router.post('/edit', (req, res, next) => {
+router.post("/edit", (req, res, next) => {
   let query = req.body;
-  editHosp(query).then(() => {
-    new Result(null, '保存成功', { message: '保存成功' }).success(res);
-  })
-  .catch((err) => {
-    console.log("/hospital/edit", err);
-    next(boom.badImplementation(err));
-  });
-})
+  editHosp(query)
+    .then(() => {
+      new Result(null, "保存成功", { message: "保存成功" }).success(res);
+    })
+    .catch((err) => {
+      console.log("/hospital/edit", err);
+      next(boom.badImplementation(err));
+    });
+});
 
 module.exports = router;
